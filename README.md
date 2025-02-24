@@ -9,5 +9,5 @@ Official repo of PlainQAFact
 
 ### Overall Framework
 <div align="center">
-  <img src="https://github.com/zhiwenyou103/PlainQAFact/main/pics/system.jpg" height="500" width="700">
+  <img src="https://github.com/zhiwenyou103/PlainQAFact/blob/main/pics/system.jpg" height="500" width="700">
 </div>
