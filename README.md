@@ -5,3 +5,9 @@ Official repo of PlainQAFact
     - Target_Sentence: The plain language sentence/summary.
     - Original_Abstract: The scientific abstract corresponding to each sentence/summary.
     - External: Whether the sentence includes information does not explicitly present in the scientific abstract. ('yes': explanation, 'no': simplification)
+
+
+### Overall Framework
+<div align="center">
+  <img src="https://github.com/zhiwenyou103/PlainQAFact/main/pics/system.jpg" height="500" width="700">
+</div>
