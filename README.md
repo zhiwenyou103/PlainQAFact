@@ -14,7 +14,7 @@
 
 
 ## Installation
-Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG/blob/main/README.md#requirements) to install PyTorch and the required packages.
+Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and the required packages.
 Then, run the following command:
 ```bash
 pip install -r requirements.txt
