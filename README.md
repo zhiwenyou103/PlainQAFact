@@ -16,6 +16,7 @@
 
 ## Installation
 - First, create a new conda env: `conda create -n plainqafact python=3.9` and clone our repo.
+- `cd PlainQAFact`
 - Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
 - Then, run the following command:
 ```bash
