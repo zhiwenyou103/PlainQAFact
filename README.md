@@ -19,9 +19,12 @@
 - `cd PlainQAFact`
 - Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
 - Then, run the following command:
-```bash
-conda install git
-pip install -r requirements.txt
-```
-- Finally, install the old tokenizer package through `pip install transformers_old_tokenizer-3.1.0-py3-none-any.whl`.
+    ```bash
+    conda install git
+    pip install -r requirements.txt
+    ```
+- Finally, install the old tokenizer package through:
+    ```bash
+    pip install transformers_old_tokenizer-3.1.0-py3-none-any.whl
+    ```
 
