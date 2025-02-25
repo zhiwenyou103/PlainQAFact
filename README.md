@@ -15,8 +15,12 @@
 
 
 ## Installation
-Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and the required packages.
-Then, run the following command:
+- First, create a new conda env: `conda create -n plainqafact python=3.9` and clone our repo.
+- Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
+- Then, run the following command:
 ```bash
+conda install git
 pip install -r requirements.txt
 ```
+- Finally, install the old tokenizer package through `pip install transformers_old_tokenizer-3.1.0-py3-none-any.whl`.
+
