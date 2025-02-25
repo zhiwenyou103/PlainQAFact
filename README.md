@@ -7,6 +7,8 @@
     - External: Whether the sentence includes information does not explicitly present in the scientific abstract. ('yes': explanation, 'no': simplification)
 - Our fine-tuned Question Generation model is available on 🤗 Hugging Face: [`QG model`](https://huggingface.co/uzw/bart-large-question-generation) (or download it [here](https://drive.google.com/file/d/1-MA9dfOtCm38yTfiQN9Xm8sRvcRD_Cmc/view?usp=drive_link))
 
+> NOTE: This repo is heavily relied on [QAFactEval](https://github.com/salesforce/QAFactEval) and [QAEval](https://github.com/danieldeutsch/qaeval).
+
 
 ## Overall Framework
 <div align="center">
@@ -32,3 +34,5 @@
 In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
 
 Download the pre-trained QA model through `download_question_answering.sh`.
+
+
