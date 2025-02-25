@@ -17,7 +17,7 @@
 ## Installation
 - First, create a new conda env: `conda create -n plainqafact python=3.9` and clone our repo.
 - `cd PlainQAFact`
-- Follow the instructions in [`MedRAG`](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
+- Follow the instructions in [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
 - Then, run the following command:
     ```bash
     conda install git
@@ -28,3 +28,7 @@
     pip install transformers_old_tokenizer-3.1.0-py3-none-any.whl
     ```
 
+## Model Downloading
+In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
+
+Download the pre-trained QA model through `download_question_answering.sh`.
