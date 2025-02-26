@@ -41,14 +41,14 @@ Download the pre-trained QA model and our pre-trained classifier through `bash d
 Before running the following command, please download the question answering and learned classifier models through above instructions. 
 ```bash
 python3 run.py \
-    --classifier_type learned \
-    --input_file data/summary_level.csv \
-    --classifier_path path/to/learned_classifier \
-    --question_generation_model_path uzw/bart-large-question-generation \
-    --qa_answering_model_dir models/answering \
-    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
-    --knowledge_base combined \
-    --answer_selection_strategy llm-keywords
+    --classifier_type learned \  # Options: 'learned', 'llama', 'gpt'
+    --input_file data/summary_level.csv \ # path of the input dataset 
+    --classifier_path path/to/learned_classifier \ # path of the classifier
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \ # path of the answer extractor
+    --question_generation_model_path uzw/bart-large-question-generation \ # path of the question generation model
+    --qa_answering_model_dir models/answering \ # path of the question answering model
+    --knowledge_base combined \ # knowledge bases for retrieval
+    --answer_selection_strategy llm-keywords  # Options: 'llm-keywords', 'gpt-keywords', 'none'
 ```
 
 ### Running through your own data
@@ -59,9 +59,9 @@ python3 run.py \
     --input_file your_own_data.json \
     --input_file_format json \
     --classifier_path path/to/learned_classifier \
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
     --question_generation_model_path uzw/bart-large-question-generation \
     --qa_answering_model_dir models/answering \
-    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
     --knowledge_base textbooks \
     --answer_selection_strategy llm-keywords
 ```
@@ -73,9 +73,9 @@ python3 run.py \
     --classifier_type gpt \
     --input_file your_own_data.json \
     --input_file_format json \
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
     --question_generation_model_path uzw/bart-large-question-generation \
     --qa_answering_model_dir models/answering \
-    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
     --knowledge_base textbooks \
     --answer_selection_strategy llm-keywords
 ```
