@@ -33,6 +33,55 @@
 ## Model Downloading
 In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
 
-Download the pre-trained QA model through `download_question_answering.sh`.
+Download the pre-trained QA model through `download_question_answering.sh`. Download our pre-trained classifier [here](https://drive.google.com/file/d/1PuQA6bYsnKrIUU1i3ioKhr7xxWnJhdSh/view?usp=sharing).
 
 
+## Usage of PlainQAFact
+### Running through our PlainFact dataset
+Before running the following command, please download the question answering and learned classifier models through above instructions. 
+```bash
+python3 run.py \
+    --classifier_type learned \
+    --input_file data/summary_level.csv \
+    --classifier_path path/to/learned_classifier \
+    --question_generation_model_path uzw/bart-large-question-generation \
+    --qa_answering_model_dir models/answering \
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
+    --knowledge_base combined \
+    --answer_selection_strategy llm-keywords
+```
+
+### Running through your own data
+Please modify the [`default_config.py]() file Line `17-19` to indicate the heading/key names of your dataset. We currently support `.json`, `.txt`, and `.csv` filee. 
+```bash
+python3 run.py \
+    --classifier_type learned \
+    --input_file your_own_data.json \
+    --input_file_format json \
+    --classifier_path path/to/learned_classifier \
+    --question_generation_model_path uzw/bart-large-question-generation \
+    --qa_answering_model_dir models/answering \
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
+    --knowledge_base textbooks \
+    --answer_selection_strategy llm-keywords
+```
+
+### Easily replace the pre-trained classifier to OpenAI models or your own
+We provides options to easily replace our pre-trained classisifer tailored for the biomedical plain language summarization tasks to other tasks. You may simply set `--classifier_type` as `gpt` and provide your OpenAI API key in the [`default_config.py]() file Line 26 to run PlainQAFact.
+```bash
+python3 run.py \
+    --classifier_type gpt \
+    --input_file your_own_data.json \
+    --input_file_format json \
+    --question_generation_model_path uzw/bart-large-question-generation \
+    --qa_answering_model_dir models/answering \
+    --llm_model_path meta-llama/Llama-3.1-8B-Instruct \
+    --knowledge_base textbooks \
+    --answer_selection_strategy llm-keywords
+```
+
+### Using other Knowledge Bases for retrieval
+Currently, we only experiment with two KBs: Textbooks and StatPearls. You may want to use your customized KBs for more accurate retrieval. In PlainQAFact, we combine both Textbooks and StatPearls and concatenate with the scientific abstracts. Set `--knowledge_base textbooks` as `combined` to reproduce our results.
+
+
+> NOTE: Using Llama 3.1 8B model for both classification and answer extraction would take over 40 GB GPU memory. We recommend to use our pre-trained classifier or OpenAI models for classification if the GPU memory is limited.
