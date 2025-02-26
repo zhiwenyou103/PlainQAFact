@@ -6,3 +6,4 @@ overrides==7.7.0
 spacy==3.8.3
 sentencepiece==0.2.0
 sacremoses==0.1.1
+gdown
