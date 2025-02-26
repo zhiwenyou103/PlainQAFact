@@ -33,7 +33,7 @@
 ## Model Downloading
 In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
 
-Download the pre-trained QA model through `download_question_answering.sh`. Download our pre-trained classifier [here](https://drive.google.com/file/d/1PuQA6bYsnKrIUU1i3ioKhr7xxWnJhdSh/view?usp=sharing).
+Download the pre-trained QA model and our pre-trained classifier through `bash download_question_answering.sh`.
 
 
 ## Usage of PlainQAFact
@@ -52,7 +52,7 @@ python3 run.py \
 ```
 
 ### Running through your own data
-Please modify the [`default_config.py](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L17) file Line `17-19` to indicate the heading/key names of your dataset. We currently support `.json`, `.txt`, and `.csv` filee. 
+Please modify the [`default_config.py`](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L17) file `Line 17-19` to indicate the heading/key names of your dataset. We currently support `.json`, `.txt`, and `.csv` file.
 ```bash
 python3 run.py \
     --classifier_type learned \
@@ -67,7 +67,7 @@ python3 run.py \
 ```
 
 ### Easily replace the pre-trained classifier to OpenAI models or your own
-We provides options to easily replace our pre-trained classisifer tailored for the biomedical plain language summarization tasks to other tasks. You may simply set `--classifier_type` as `gpt` and provide your OpenAI API key in the [`default_config.py](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L26) file Line 26 to run PlainQAFact.
+We provides options to easily replace our pre-trained classisifer tailored for the biomedical plain language summarization tasks to other tasks. You may simply set `--classifier_type` as `gpt` and provide your OpenAI API key in the [`default_config.py`](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L26) file `Line 26` to run PlainQAFact.
 ```bash
 python3 run.py \
     --classifier_type gpt \
