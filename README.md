@@ -85,3 +85,7 @@ Currently, we only experiment with two KBs: Textbooks and StatPearls. You may wa
 
 
 > NOTE: Using Llama 3.1 8B model for both classification and answer extraction would take over 40 GB GPU memory. We recommend to use our pre-trained classifier or OpenAI models for classification if the GPU memory is limited.
+
+
+## Citation Information
+For the use of PlainQAFact and PlainFact benchmark, please cite:
