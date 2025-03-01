@@ -22,6 +22,9 @@ def parse_args():
     parser.add_argument('--question_generation_model_path', required=True, help='Path to QA generation model')
     parser.add_argument('--qa_answering_model_dir', required=True, help='Path to QA answering model directory')
     parser.add_argument('--llm_model_path', required=True, help='Path to the Llama model')
+    parser.add_argument('--cuda_device', default='cuda:0', help='Define your cuda device (e.g., cuda:0)')
+    parser.add_argument('--scoring_batch_size', default=1, help='Batch size of BERTScore evaluation')
+    parser.add_argument('--verbose', default=True)
     parser.add_argument(
         '--classifier_type',
         choices=['learned', 'llama', 'gpt'],
@@ -143,11 +146,12 @@ def main():
     )
 
     metric = PlainQAFact(
+        classifier_type=config.classifier_type,
+        classifier_path=config.classifier_path,
         generation_model_path=config.question_generation_model_path,
         answering_model_dir=config.qa_answering_model_dir,
         cuda_device=config.cuda_device,
-        use_bertscore=config.use_bertscore,
-        verbose=config.verbose,
+        knowledge_base=config.knowledge_base,
         generation_batch_size=config.generation_batch_size,
         answering_batch_size=config.answering_batch_size,
         scoring_batch_size=config.scoring_batch_size,
