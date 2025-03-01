@@ -1,10 +1,3 @@
-"""
- * Copyright (c) 2022, salesforce.com, inc.
- * All rights reserved.
- * SPDX-License-Identifier: BSD-3-Clause
- * For full license text, see the LICENSE file in the repo root or https://opensource.org/licenses/BSD-3-Clause
-"""
-
 from typing import Dict, List, Union
 from transformers.data.metrics.squad_metrics import compute_f1
 from qaeval.metric import QAEval
@@ -32,7 +25,6 @@ def get_filter(qa_summ, answers_ref):
 class PlainQAFact(QAEval):
     def __init__(
             self,
-            use_bertscore: bool,
             cuda_device: int,
             scoring_batch_size: int,
             answer_selection_strategy: str,
@@ -46,9 +38,8 @@ class PlainQAFact(QAEval):
             spacy.cli.download("en_core_web_sm")
         super().__init__(cuda_device=cuda_device, *args, **kwargs)
         
-        if use_bertscore:
-            bertscore_scorer = BertScoreScorer(cuda_device=cuda_device, batch_size=scoring_batch_size)
-            self.scorer.scorers.append(bertscore_scorer)
+        bertscore_scorer = BertScoreScorer(cuda_device=cuda_device, batch_size=scoring_batch_size)
+        self.scorer.scorers.append(bertscore_scorer)
         
         self.answer_selection_strategy = answer_selection_strategy
         
