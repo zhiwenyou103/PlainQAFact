@@ -1,4 +1,3 @@
-
 from sentence_transformers.models import Transformer, Pooling
 from sentence_transformers import SentenceTransformer
 import os
@@ -39,9 +38,6 @@ def concat(title, content):
 class CustomizeSentenceTransformer(SentenceTransformer): # change the default pooling "MEAN" to "CLS"
 
     def _load_auto_model(self, model_name_or_path, *args, **kwargs):
-        """
-        Creates a simple Transformer + CLS Pooling model and returns the modules
-        """
         print("No sentence-transformers model found with name {}. Creating a new one with CLS pooling.".format(model_name_or_path))
         token = kwargs.get('token', None)
         cache_folder = kwargs.get('cache_folder', None)
@@ -60,17 +56,14 @@ class CustomizeSentenceTransformer(SentenceTransformer): # change the default po
         return [transformer_model, pooling_model]
 
 
-def embed(chunk_dir, index_dir, model_name, **kwarg):
-
+def embed(chunk_dir, index_dir, model_name, device, **kwarg):
     save_dir = os.path.join(index_dir, "embedding")
-    
     if "contriever" in model_name:
-        model = SentenceTransformer(model_name, device="cuda" if torch.cuda.is_available() else "cpu")
+        model = SentenceTransformer(model_name, device=device if torch.cuda.is_available() else "cpu")
     else:
-        model = CustomizeSentenceTransformer(model_name, device="cuda" if torch.cuda.is_available() else "cpu")
+        model = CustomizeSentenceTransformer(model_name, device=device if torch.cuda.is_available() else "cpu")
 
     model.eval()
-
     fnames = sorted([fname for fname in os.listdir(chunk_dir) if fname.endswith(".jsonl")])
 
     if not os.path.exists(save_dir):
@@ -127,11 +120,10 @@ def construct_index(index_dir, model_name, h_dim=768, HNSW=False, M=32):
 
 
 class Retriever: 
-
-    def __init__(self, retriever_name="ncbi/MedCPT-Query-Encoder", corpus_name="textbooks", db_dir="./corpus", HNSW=False, **kwarg):
+    def __init__(self, retriever_name="ncbi/MedCPT-Query-Encoder", corpus_name="textbooks", db_dir="./corpus", HNSW=False, device='cuda:0', **kwarg):
         self.retriever_name = retriever_name
         self.corpus_name = corpus_name
-
+        self.device = device
         self.db_dir = db_dir
         if not os.path.exists(self.db_dir):
             os.makedirs(self.db_dir)
@@ -189,16 +181,16 @@ class Retriever:
                     os.system("rm {:s}".format(os.path.join(self.index_dir, "embedding.zip")))
                     h_dim = 768
                 else:
-                    h_dim = embed(chunk_dir=self.chunk_dir, index_dir=self.index_dir, model_name=self.retriever_name.replace("Query-Encoder", "Article-Encoder"), **kwarg)
+                    h_dim = embed(chunk_dir=self.chunk_dir, index_dir=self.index_dir, model_name=self.retriever_name.replace("Query-Encoder", "Article-Encoder"), device=self.device, **kwarg)
 
                 print("[In progress] Embedding finished! The dimension of the embeddings is {:d}.".format(h_dim))
                 self.index = construct_index(index_dir=self.index_dir, model_name=self.retriever_name.replace("Query-Encoder", "Article-Encoder"), h_dim=h_dim, HNSW=HNSW)
                 print("[Finished] Corpus indexing finished!")
                 self.metadatas = [json.loads(line) for line in open(os.path.join(self.index_dir, "metadatas.jsonl")).read().strip().split('\n')]            
             if "contriever" in self.retriever_name.lower():
-                self.embedding_function = SentenceTransformer(self.retriever_name, device="cuda" if torch.cuda.is_available() else "cpu")
+                self.embedding_function = SentenceTransformer(self.retriever_name, device=device if torch.cuda.is_available() else "cpu")
             else:
-                self.embedding_function = CustomizeSentenceTransformer(self.retriever_name, device="cuda" if torch.cuda.is_available() else "cpu")
+                self.embedding_function = CustomizeSentenceTransformer(self.retriever_name, device=device if torch.cuda.is_available() else "cpu")
             self.embedding_function.eval()
 
     def get_relevant_documents(self, question, k=32, id_only=False, **kwarg):
@@ -234,16 +226,17 @@ class Retriever:
 
 class RetrievalSystem:
 
-    def __init__(self, retriever_name="MedCPT", corpus_name="Textbooks", db_dir="./corpus", HNSW=False, cache=False):
+    def __init__(self, retriever_name="MedCPT", corpus_name="Textbooks", db_dir="./corpus", HNSW=False, cache=False, device='cuda:0'):
         self.retriever_name = retriever_name
         self.corpus_name = corpus_name
+        self.device = device
         assert self.corpus_name in corpus_names
         assert self.retriever_name in retriever_names
         self.retrievers = []
         for retriever in retriever_names[self.retriever_name]:
             self.retrievers.append([])
             for corpus in corpus_names[self.corpus_name]:
-                self.retrievers[-1].append(Retriever(retriever, corpus, db_dir, HNSW=HNSW))
+                self.retrievers[-1].append(Retriever(retriever, corpus, db_dir, HNSW=HNSW, device=self.device))
         self.cache = cache
         if self.cache:
             self.docExt = DocExtracter(cache=True, corpus_name=self.corpus_name, db_dir=db_dir)
