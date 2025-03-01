@@ -13,7 +13,7 @@ from openai import OpenAI
 
 def parse_args():
     parser = argparse.ArgumentParser(description='Run medical text evaluation pipeline')
-    parser.add_argument('--classifier_path', help='Path to input CSV file')
+    parser.add_argument('--classifier_path', help='Path to the pre-trained classifier')
     parser.add_argument('--input_file', required=True, help='Path to input file (.csv, .json, or .txt)')
     parser.add_argument('--input_file_format', choices=['csv', 'json', 'txt'], default='csv',
                         help='Input file format')
