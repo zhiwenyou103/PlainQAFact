@@ -50,6 +50,7 @@ class PlainQAFact(QAEval):
             retrieval_k: int = 3,
             generation_batch_size: int = 1,
             answering_batch_size: int = 1,
+            verbose: bool = True,
             *args,
             **kwargs):
 
@@ -70,16 +71,6 @@ class PlainQAFact(QAEval):
         self.retrieval_k = retrieval_k
         self.generation_batch_size = generation_batch_size
         self.answering_batch_size = answering_batch_size
-
-        plainqafact_params = [
-            'classifier_type', 'classifier_path', 'llm_model_path',
-            'question_generation_model_path', 'qa_answering_model_dir',
-            'knowledge_base', 'target_sentence_col', 'abstract_col',
-            'input_file_format', 'delimiter', 'encoding', 'retrieval_k',
-            'generation_batch_size', 'answering_batch_size', 'openai_api_key'
-        ]
-        for param in plainqafact_params:
-            kwargs.pop(param, None)
             
         try:
             import spacy
@@ -88,15 +79,29 @@ class PlainQAFact(QAEval):
             import spacy.cli
             spacy.cli.download("en_core_web_sm")
 
-        super().__init__(
-            cuda_device=cuda_device,
-            generation_model_path=question_generation_model_path,
-            answering_model_dir=qa_answering_model_dir,
-            generation_batch_size=generation_batch_size,
-            answering_batch_size=answering_batch_size,
-            *args,
-            **kwargs
-        )
+        qaeval_params = {
+            'cuda_device': cuda_device,
+            'generation_model_path': question_generation_model_path,
+            'answering_model_dir': qa_answering_model_dir,
+            'generation_batch_size': generation_batch_size,
+            'answering_batch_size': answering_batch_size,
+            'verbose': verbose
+        }
+        
+        plainqafact_params = [
+            'classifier_type', 'classifier_path', 'llm_model_path',
+            'question_generation_model_path', 'qa_answering_model_dir',
+            'knowledge_base', 'target_sentence_col', 'abstract_col',
+            'input_file_format', 'delimiter', 'encoding', 'retrieval_k',
+            'generation_batch_size', 'answering_batch_size', 'openai_api_key',
+            'scoring_batch_size', 'answer_selection_strategy'
+        ]
+        
+        for key, value in kwargs.items():
+            if key not in plainqafact_params:
+                qaeval_params[key] = value
+
+        super().__init__(**qaeval_params)
         
         bertscore_scorer = BertScoreScorer(cuda_device=cuda_device, batch_size=scoring_batch_size)
         self.scorer.scorers.append(bertscore_scorer)
