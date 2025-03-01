@@ -6,7 +6,7 @@ from openai import OpenAI
 
 class LearnedClassifier:
     def __init__(self, model_path, device):
-        self.device = torch.device(device if torch.cuda.is_available() else 'cpu')
+        self.device = torch.device(f"cuda:{device}" if torch.cuda.is_available() else "cpu")
         self.tokenizer = AutoTokenizer.from_pretrained(model_path)
         self.model = AutoModelForSequenceClassification.from_pretrained(model_path, use_safetensors=True)
         self.model.to(self.device)
