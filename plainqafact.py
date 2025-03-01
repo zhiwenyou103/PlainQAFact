@@ -114,7 +114,7 @@ class PlainQAFact(QAEval):
     def _retrieve_knowledge(self, queries, corpus_name: str):
         knowledge = []
         for query in queries:
-            medrag = MedRAG(retrieval=True, retriever_name="MedCPT", corpus_name=corpus_name, corpus_cache=True)
+            medrag = MedRAG(cuda_device=self.cuda_device, retrieval=True, retriever_name="MedCPT", corpus_name=corpus_name, corpus_cache=True)
             snippets, _ = medrag.answer(question=query[0], k=self.retrieval_k)
             content = ' '.join([item['content'].strip().replace('\n', '') for item in snippets])
             knowledge.append(content)
