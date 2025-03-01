@@ -1,11 +1,12 @@
 from typing import Dict, List, Set
 import bert_score
 import numpy as np
+import torch
 from qaeval.scoring.scorers.scorer import Scorer
 
 class BertScoreScorer(Scorer):
     def __init__(self, cuda_device: int, batch_size: int = 8) -> None:
-        self.device = f'cuda:{cuda_device}' if cuda_device >= 0 else 'cpu'
+        self.device = torch.device(f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu")
         self.batch_size = batch_size
 
     def keys(self) -> Set[str]:
