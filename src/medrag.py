@@ -14,15 +14,16 @@ from template import *
 
 class MedRAG:
 
-    def __init__(self, retrieval=True, follow_up=False, retriever_name="MedCPT", corpus_name="Textbooks", db_dir="./corpus", cache_dir=None, corpus_cache=False, HNSW=False):
+    def __init__(self, cuda_device=0, retrieval=True, follow_up=False, retriever_name="MedCPT", corpus_name="Textbooks", db_dir="./corpus", cache_dir=None, corpus_cache=False, HNSW=False):
         self.retrieval = retrieval
         self.retriever_name = retriever_name
         self.corpus_name = corpus_name
         self.db_dir = db_dir
         self.cache_dir = cache_dir
         self.docExt = None
+        self.device = torch.device(f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu")
         if retrieval:
-            self.retrieval_system = RetrievalSystem(self.retriever_name, self.corpus_name, self.db_dir, cache=corpus_cache, HNSW=HNSW)
+            self.retrieval_system = RetrievalSystem(self.retriever_name, self.corpus_name, self.db_dir, cache=corpus_cache, HNSW=HNSW, device=self.device)
         else:
             self.retrieval_system = None
         self.templates = {"cot_system": general_cot_system, "cot_prompt": general_cot,
