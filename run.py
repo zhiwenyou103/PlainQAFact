@@ -148,15 +148,17 @@ def main():
     metric = PlainQAFact(
         classifier_type=config.classifier_type,
         classifier_path=config.classifier_path,
-        generation_model_path=config.question_generation_model_path,
-        answering_model_dir=config.qa_answering_model_dir,
+        question_generation_model_path=config.question_generation_model_path,
+        qa_answering_model_dir=config.qa_answering_model_dir,
         cuda_device=config.cuda_device,
+        verbose=config.verbose,
         knowledge_base=config.knowledge_base,
         generation_batch_size=config.generation_batch_size,
         answering_batch_size=config.answering_batch_size,
         scoring_batch_size=config.scoring_batch_size,
         answer_selection_strategy=config.answer_selection_strategy
     )
+
 
     try:
         generator = initialize_answer_extractor(config)
