@@ -22,7 +22,7 @@ def parse_args():
     parser.add_argument('--question_generation_model_path', required=True, help='Path to QA generation model')
     parser.add_argument('--qa_answering_model_dir', required=True, help='Path to QA answering model directory')
     parser.add_argument('--llm_model_path', required=True, help='Path to the Llama model')
-    parser.add_argument('--cuda_device', default='cuda:0', help='Define your cuda device (e.g., cuda:0)')
+    parser.add_argument('--cuda_device', type=int, default=0, help='CUDA device index (e.g., 0 for cuda:0)')
     parser.add_argument('--scoring_batch_size', default=1, help='Batch size of BERTScore evaluation')
     parser.add_argument('--verbose', default=True)
     parser.add_argument(
