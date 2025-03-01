@@ -17,6 +17,51 @@
 
 
 ## Installation
+
+### Quickstart
+```bash
+pip install plainqafact
+```
+
+After installation, you can use PlainQAFact directly in your Python code:
+```python
+from plainqafact import PlainQAFact
+
+metric = PlainQAFact(
+    cuda_device=0,
+    classifier_type='learned',
+    classifier_path='models/learned_classifier',
+    llm_model_path='meta-llama/Llama-3.1-8B-Instruct',
+    question_generation_model_path='uzw/bart-large-question-generation',
+    qa_answering_model_dir='models/answering',
+    knowledge_base='combined',
+    scoring_batch_size=1,
+    answer_selection_strategy='llm-keywords'
+)
+
+# choice 1: directly evaluate a data file:
+# results = metric.evaluate_all(input_file='your_data.csv')
+
+# choice 2: interactively evaluate summaries
+# summaries:
+target_sentences = [
+    "The study shows aspirin reduces heart attack risk.",
+    "Patients with high blood pressure should exercise regularly."
+]
+# scientific abstracts:
+abstracts = [
+    "A comprehensive clinical trial demonstrated that daily aspirin administration significantly decreased the incidence of myocardial infarction in high-risk patients.",
+    "Research indicates that regular physical activity is an effective intervention for managing hypertension in adult patients."
+]
+
+results = metric.evaluate(target_sentences, abstracts)
+
+print(f"Explanation score (mean: {results['external_mean']:.4f}):", results['external_scores'])
+print(f"Simplification score (mean: {results['internal_mean']:.4f}):", results['internal_scores'])
+print(f"PlainQAFact score: {results['overall_mean']:.4f}")
+```
+
+### Option 2: Install from source
 - First, create a new conda env: `conda create -n plainqafact python=3.9` and clone our repo.
 - `cd PlainQAFact`
 - Follow the instructions in [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
