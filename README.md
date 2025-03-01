@@ -87,6 +87,7 @@ Download the pre-trained QA model and our pre-trained classifier through `bash d
 Before running the following command, please download the question answering and learned classifier models through above instructions. 
 ```bash
 python3 run.py \
+    --cuda_device 0 \
     --classifier_type learned \  # Options: 'learned', 'llama', 'gpt'
     --input_file data/summary_level.csv \ # path of the input dataset 
     --classifier_path path/to/learned_classifier \ # path of the classifier
@@ -101,6 +102,7 @@ python3 run.py \
 Please modify the [`default_config.py`](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L17) file `Line 17-19` to indicate the heading/key names of your dataset. We currently support `.json`, `.txt`, and `.csv` file.
 ```bash
 python3 run.py \
+    --cuda_device 0 \
     --classifier_type learned \
     --input_file your_own_data.json \
     --input_file_format json \
@@ -116,6 +118,7 @@ python3 run.py \
 We provides options to easily replace our pre-trained classisifer tailored for the biomedical plain language summarization tasks to other tasks. You may simply set `--classifier_type` as `gpt` and provide your OpenAI API key in the [`default_config.py`](https://github.com/zhiwenyou103/PlainQAFact/blob/main/default_config.py#L26) file `Line 26` to run PlainQAFact.
 ```bash
 python3 run.py \
+    --cuda_device 0 \
     --classifier_type gpt \
     --input_file your_own_data.json \
     --input_file_format json \
