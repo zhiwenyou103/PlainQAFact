@@ -6,7 +6,7 @@
     - Target_Sentence: The plain language sentence/summary.
     - Original_Abstract: The scientific abstract corresponding to each sentence/summary.
     - External: Whether the sentence includes information does not explicitly present in the scientific abstract. ('yes': explanation, 'no': simplification)
-    - _We will release the full version of PlainFact later (including Category and Relation information). Stay tuned!_
+    - _We will release the full version of PlainFact soon (including Category and Relation information). Stay tuned!_
 - (2025.02.24) Our fine-tuned Question Generation model is available on 🤗 Hugging Face: [`QG model`](https://huggingface.co/uzw/bart-large-question-generation) (or download it [here](https://drive.google.com/file/d/1-MA9dfOtCm38yTfiQN9Xm8sRvcRD_Cmc/view?usp=drive_link))
 
 > NOTE: This repo is heavily relied on [QAFactEval](https://github.com/salesforce/QAFactEval), [QAEval](https://github.com/danieldeutsch/qaeval), and [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG).
