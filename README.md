@@ -22,6 +22,7 @@
 
 ### Quickstart
 ```bash
+conda create -n plainqafact python=3.9
 pip install plainqafact
 ```
 
