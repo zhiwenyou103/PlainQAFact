@@ -3,6 +3,7 @@
 [![Dataset](http://img.shields.io/badge/PlainFact-dataset-008080)](XXX)
 
 # PlainQAFact
+`PlainQAFact` is a retrieval-augmented and question-answering (QA)-based factuality evaluation framework for assessing the factuality of biomedical plain language summarization tasks. `PlainFact` is a high-quality human-annotated dataset with fine-grained explanation (i.e., added information) annotations.
 
 ## News
 - (2025.03.02) Pre-embedded vector bases of [Textbooks](https://github.com/jind11/MedQA) and [StatPearls](https://www.statpearls.com/) can be downloaded [here](https://drive.google.com/file/d/1DVJoKwuFLCIs0iEvrkP05KS9y6Z6kjXT/view?usp=sharing).
