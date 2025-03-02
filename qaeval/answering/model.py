@@ -27,13 +27,13 @@ class QuestionAnsweringModel(object):
                  batch_size: int = 8,
                  silent: bool = True) -> None:
         self.config = AutoConfig.from_pretrained(model_dir)
-        self.tokenizer = AutoTokenizer.from_pretrained(model_dir) # , do_lower_case=True
+        self.tokenizer = AutoTokenizer.from_pretrained(model_dir)
         self.model = AutoModelForQuestionAnswering.from_pretrained(model_dir, config=self.config)
-        if cuda_device >= 0:
-            self.model.to(cuda_device)
+        self.device = torch.device(f"cuda:{cuda_device}" if torch.cuda.is_available() else "cpu")
+        if self.device != 'cpu':
+            self.model.to(self.device)
 
         self.model_type = 'electra'
-        self.cuda_device = cuda_device
         self.batch_size = batch_size
         self.max_seq_length = 512 #384
         self.doc_stride = 128
@@ -130,7 +130,6 @@ class QuestionAnsweringModel(object):
         try_fixing_offsets: bool = True,
         return_dicts: bool = False,
     ) -> List[Prediction]:
-        # Convert all of the instances to squad examples
         examples = []
         for i, (question, context) in enumerate(input_data):
             if not question or not context:
@@ -157,7 +156,7 @@ class QuestionAnsweringModel(object):
             tokenizer=self.tokenizer,
             max_seq_length=self.max_seq_length,
             doc_stride=self.doc_stride,
-            max_query_length=64, # original 512
+            max_query_length=64, 
             is_training=False,
             return_dataset="pt",
             threads=1,
@@ -174,8 +173,8 @@ class QuestionAnsweringModel(object):
             generator = tqdm(generator, desc='Evaluating')
 
         for batch in generator:
-            if self.cuda_device >= 0:
-                batch = tuple(t.to(self.cuda_device) for t in batch)
+            if self.device != 'cpu':
+                batch = tuple(t.to(self.device) for t in batch)
 
             with torch.no_grad():
                 inputs = {
