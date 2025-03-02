@@ -1,4 +1,3 @@
-# This file was edited from the run_squad.py file in the experiment repository
 import torch
 from torch.utils.data import DataLoader, SequentialSampler
 from tqdm import tqdm
