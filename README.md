@@ -18,9 +18,9 @@
 </div>
 
 ## Model Downloading
-In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
+In PlainQAFact, we use [pre-trained classifier](https://drive.google.com/file/d/1PuQA6bYsnKrIUU1i3ioKhr7xxWnJhdSh/view?usp=sharing) to distinguish simplification and explanation sentences, [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
 
-Download the pre-trained QA model and our pre-trained classifier through `bash download_question_answering.sh`.
+Download the **pre-trained QA model** and our **pre-trained classifier** through `bash download_question_answering.sh`.
 
 ## Quickstart
 ```bash
