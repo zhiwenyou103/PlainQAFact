@@ -156,12 +156,6 @@ class PlainQAFact(QAEval):
         if len(target_sentences) != len(abstracts):
             raise ValueError("The number of target sentences must match the number of abstracts")
 
-        try:
-            generator = self._initialize_answer_extractor()
-        except Exception as e:
-            print(f"Error initializing generator: {str(e)}")
-            sys.exit(1)
-
         classifier = self._initialize_classifier()
         external, external_abs = [], []
         internal, internal_abs = [], []
@@ -178,11 +172,17 @@ class PlainQAFact(QAEval):
         external_summaries = [[s] for s in external]
         internal_summaries = [[s] for s in internal]
 
+        try:
+            generator = self._initialize_answer_extractor()
+        except Exception as e:
+            print(f"Error initializing generator: {str(e)}")
+            sys.exit(1)
+
         if external:
             combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
             external_results = self.score_batch_qafacteval(
                 combined_contexts,
-                [[[s]] for s in external],
+                external_summaries,
                 return_qa_pairs=True,
                 generator=generator
             )
@@ -192,7 +192,7 @@ class PlainQAFact(QAEval):
         if internal:
             internal_results = self.score_batch_qafacteval(
                 internal_abs,
-                [[[s]] for s in internal],
+                internal_summaries,
                 return_qa_pairs=True,
                 generator=generator
             )
@@ -224,11 +224,6 @@ class PlainQAFact(QAEval):
         else:
             raise ValueError(f"Unsupported file format: {self.input_file_format}")
 
-        try:
-            generator = self._initialize_answer_extractor()
-        except Exception as e:
-            print(f"Error initializing generator: {str(e)}")
-            sys.exit(1)
 
         classifier = self._initialize_classifier()
         external, external_abs = [], []
@@ -246,11 +241,17 @@ class PlainQAFact(QAEval):
         external_summaries = [[s] for s in external]
         internal_summaries = [[s] for s in internal]
 
+        try:
+            generator = self._initialize_answer_extractor()
+        except Exception as e:
+            print(f"Error initializing generator: {str(e)}")
+            sys.exit(1)
+
         if external:
             combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
             external_results = self.score_batch_qafacteval(
                 combined_contexts,
-                [[[s]] for s in external],
+                external_summaries,
                 return_qa_pairs=True,
                 generator=generator
             )
@@ -260,7 +261,7 @@ class PlainQAFact(QAEval):
         if internal:
             internal_results = self.score_batch_qafacteval(
                 internal_abs,
-                [[[s]] for s in internal],
+                internal_summaries,
                 return_qa_pairs=True,
                 generator=generator
             )
