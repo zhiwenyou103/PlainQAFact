@@ -26,7 +26,7 @@ conda create -n plainqafact python=3.9
 pip install plainqafact
 ```
 
-After installation, make sure you initialized `git-lfs` as required by [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG). Then, you can use PlainQAFact directly in your Python code:
+After installation, make sure you initialized `git-lfs` as required by [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG). Then, you can directly use PlainQAFact through:
 ```python
 from plainqafact import PlainQAFact
 
@@ -42,10 +42,7 @@ metric = PlainQAFact(
     answer_selection_strategy='llm-keywords'
 )
 
-# choice 1: directly evaluate a data file:
-# results = metric.evaluate_all(input_file='your_data.csv')
-
-# choice 2: interactively evaluate summaries
+# choice 1: interactively evaluate summaries
 # summaries:
 target_sentences = [
     "The study shows aspirin reduces heart attack risk.",
@@ -58,6 +55,33 @@ abstracts = [
 ]
 
 results = metric.evaluate(target_sentences, abstracts)
+
+print(f"Explanation score (mean: {results['external_mean']:.4f}):", results['external_scores'])
+print(f"Simplification score (mean: {results['internal_mean']:.4f}):", results['internal_scores'])
+print(f"PlainQAFact score: {results['overall_mean']:.4f}")
+```
+
+Or you can evaluate a data file through:
+```python
+from plainqafact import PlainQAFact
+
+metric = PlainQAFact(
+    cuda_device=0,
+    classifier_type='learned',
+    classifier_path='models/learned_classifier',
+    llm_model_path='meta-llama/Llama-3.1-8B-Instruct',
+    question_generation_model_path='uzw/bart-large-question-generation',
+    qa_answering_model_dir='models/answering',
+    knowledge_base='combined',
+    scoring_batch_size=1,
+    answer_selection_strategy='llm-keywords',
+    target_sentence_col='Target_Sentence', # name of your summary's key (column)
+    abstract_col='Original_Abstract', # name of your abstract's key (column)
+    input_file_format='csv' # your input file format
+)
+
+# choice 2: directly evaluate a data file:
+results = metric.evaluate_all(input_file='your_data.csv')
 
 print(f"Explanation score (mean: {results['external_mean']:.4f}):", results['external_scores'])
 print(f"Simplification score (mean: {results['internal_mean']:.4f}):", results['internal_scores'])
