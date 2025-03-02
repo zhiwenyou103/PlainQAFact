@@ -26,7 +26,7 @@ conda create -n plainqafact python=3.9
 pip install plainqafact
 ```
 
-After installation, you can use PlainQAFact directly in your Python code:
+After installation, make sure you initialize `git-lfs` as required by [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG). Then, you can use PlainQAFact directly in your Python code:
 ```python
 from plainqafact import PlainQAFact
 
