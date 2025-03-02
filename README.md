@@ -1,3 +1,7 @@
+[![Conference](https://img.shields.io/badge/PyPI-library-blue)](https://pypi.org/project/plainqafact/)
+[![Conference](https://img.shields.io/badge/arXiv-paper-B31B1B.svg)](XXX)
+[![Paper](http://img.shields.io/badge/PlainFact-dataset-008080)](XXX)
+
 # PlainQAFact
 
 ## News
