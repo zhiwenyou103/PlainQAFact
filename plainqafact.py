@@ -11,6 +11,8 @@ import numpy as np
 from classifier import LearnedClassifier, LLMClassifier
 from openai import OpenAI
 from src.medrag import MedRAG
+import torch
+import gc
 
 MetricsDict = Dict[str, float]
 SummaryType = Union[str, List[str]]
@@ -54,6 +56,9 @@ class PlainQAFact(QAEval):
             *args,
             **kwargs):
 
+        import os
+        os.environ['PYTORCH_CUDA_ALLOC_CONF'] = 'expandable_segments:True'
+        
         self.cuda_device = cuda_device
         self.classifier_type = classifier_type
         self.classifier_path = classifier_path
@@ -71,6 +76,7 @@ class PlainQAFact(QAEval):
         self.retrieval_k = retrieval_k
         self.generation_batch_size = generation_batch_size
         self.answering_batch_size = answering_batch_size
+        self.scoring_batch_size = scoring_batch_size
             
         try:
             import spacy
@@ -82,9 +88,9 @@ class PlainQAFact(QAEval):
         qaeval_params = {
             'cuda_device': cuda_device,
             'generation_model_path': question_generation_model_path,
-            'answering_model_dir': qa_answering_model_dir,
+            'answering_model_dir': qa_answering_model_dir, 
             'generation_batch_size': generation_batch_size,
-            'answering_batch_size': answering_batch_size,
+            'answering_batch_size': answering_batch_size, 
             'verbose': verbose
         }
         
@@ -101,20 +107,76 @@ class PlainQAFact(QAEval):
             if key not in plainqafact_params:
                 qaeval_params[key] = value
 
+        self._answer_extractor = None
+        self._classifier = None
+        self._qa_model = None
+        self._bertscore_scorer = None
+
+        self._prevent_qa_model_load = True
         super().__init__(**qaeval_params)
-        
-        bertscore_scorer = BertScoreScorer(cuda_device=cuda_device, batch_size=scoring_batch_size)
-        self.scorer.scorers.append(bertscore_scorer)
+        self._prevent_qa_model_load = False
+
+    def __del__(self):
+        try:
+            if hasattr(self, '_classifier') and self._classifier is not None:
+                del self._classifier
+            if hasattr(self, '_qa_model') and self._qa_model is not None:
+                del self._qa_model
+            if hasattr(self, '_answer_extractor') and self._answer_extractor is not None:
+                del self._answer_extractor
+            if hasattr(self, '_bertscore_scorer') and self._bertscore_scorer is not None:
+                del self._bertscore_scorer
+            
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                gc.collect()
+        except Exception as e:
+            print(f"Warning: Error during cleanup: {str(e)}")
+
+    def _initialize_answer_extractor(self):
+        if self._answer_extractor is None:
+            try:
+                if self.answer_selection_strategy == 'llm-keywords':
+                    model_kwargs = {
+                        "device_map": "auto",
+                        "torch_dtype": torch.float16,
+                        "low_cpu_mem_usage": True
+                    }
+                    self._answer_extractor = pipeline(
+                        "text-generation",
+                        model=self.llm_model_path,
+                        model_kwargs=model_kwargs
+                    )
+                elif self.answer_selection_strategy == 'gpt-keywords':
+                    self._answer_extractor = OpenAI(api_key=self.openai_api_key)
+                else:
+                    self._answer_extractor = None
+            except Exception as e:
+                print(f"Warning: Failed to initialize answer extractor: {str(e)}")
+                self._answer_extractor = None
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                    gc.collect()
+                
+        return self._answer_extractor
+
+    def _initialize_bertscore_scorer(self):
+        if self._bertscore_scorer is None:
+            self._bertscore_scorer = BertScoreScorer(cuda_device=self.cuda_device, batch_size=self.scoring_batch_size)
+            self.scorer.scorers.append(self._bertscore_scorer)
+        return self._bertscore_scorer
 
     def _initialize_classifier(self):
-        if self.classifier_type == 'learned':
-            return LearnedClassifier(self.classifier_path, device=self.cuda_device)
-        elif self.classifier_type == 'llama':
-            return LLMClassifier('llama', model_path=self.classifier_path, device=self.cuda_device)
-        elif self.classifier_type == 'gpt':
-            return LLMClassifier('gpt', openai_key=self.openai_api_key)
-        else:
-            raise ValueError(f"Unknown classifier type: {self.classifier_type}")
+        if self._classifier is None:
+            if self.classifier_type == 'learned':
+                self._classifier = LearnedClassifier(self.classifier_path, device=self.cuda_device if torch.cuda.is_available() else "cpu")
+            elif self.classifier_type == 'llama':
+                self._classifier = LLMClassifier('llama', model_path=self.classifier_path, device=self.cuda_device if torch.cuda.is_available() else "cpu")
+            elif self.classifier_type == 'gpt':
+                self._classifier = LLMClassifier('gpt', openai_key=self.openai_api_key)
+            else:
+                raise ValueError(f"Unknown classifier type: {self.classifier_type}")
+        return self._classifier
 
     def _retrieve_knowledge(self, queries, corpus_name: str):
         knowledge = []
@@ -139,24 +201,14 @@ class PlainQAFact(QAEval):
             statpearl_knowledge = self._retrieve_knowledge(summaries, "StatPearls")
             return [f"{abs_text} {tb_know} {sp_know}"
                     for abs_text, tb_know, sp_know in zip(abstracts, textbook_knowledge, statpearl_knowledge)]
-    
-    def _initialize_answer_extractor(self):
-        if self.answer_selection_strategy == 'llm-keywords':
-            return pipeline(
-                "text-generation",
-                model=self.llm_model_path,
-                device=self.cuda_device
-            )
-        elif self.answer_selection_strategy == 'gpt-keywords':
-            return OpenAI(api_key=self.openai_api_key)
-        else:
-            return None
 
     def evaluate(self, target_sentences: List[str], abstracts: List[str]) -> Dict:
         if len(target_sentences) != len(abstracts):
             raise ValueError("The number of target sentences must match the number of abstracts")
 
         classifier = self._initialize_classifier()
+        self._initialize_bertscore_scorer()
+        
         external, external_abs = [], []
         internal, internal_abs = [], []
         
@@ -172,11 +224,7 @@ class PlainQAFact(QAEval):
         external_summaries = [[s] for s in external]
         internal_summaries = [[s] for s in internal]
 
-        try:
-            generator = self._initialize_answer_extractor()
-        except Exception as e:
-            print(f"Error initializing generator: {str(e)}")
-            sys.exit(1)
+        generator = self._initialize_answer_extractor()
 
         if external:
             combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
@@ -224,8 +272,9 @@ class PlainQAFact(QAEval):
         else:
             raise ValueError(f"Unsupported file format: {self.input_file_format}")
 
-
         classifier = self._initialize_classifier()
+        self._initialize_bertscore_scorer()
+        
         external, external_abs = [], []
         internal, internal_abs = [], []
         
@@ -241,11 +290,16 @@ class PlainQAFact(QAEval):
         external_summaries = [[s] for s in external]
         internal_summaries = [[s] for s in internal]
 
+        generator = None
         try:
             generator = self._initialize_answer_extractor()
+            if generator is None and self.answer_selection_strategy == 'llm-keywords':
+                print("Warning: Failed to initialize generator for llm-keywords strategy. Falling back to default strategy.")
+                self.answer_selection_strategy = 'none'
         except Exception as e:
             print(f"Error initializing generator: {str(e)}")
-            sys.exit(1)
+            print("Falling back to default strategy.")
+            self.answer_selection_strategy = 'none'
 
         if external:
             combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
@@ -291,10 +345,13 @@ class PlainQAFact(QAEval):
         generator=None,
             ) -> List[List[MetricsDict]]:
         
-        if self.answer_selection_strategy == 'llm-keywords' or self.answer_selection_strategy == 'gpt-keywords':
-            generator = generator
-        else:
-            generator = None
+        self._initialize_bertscore_scorer()
+        
+        if generator is None:
+            generator = self._initialize_answer_extractor()
+        
+        if self.answer_selection_strategy == 'llm-keywords' and generator is None:
+            raise ValueError("Generator is required for llm-keywords strategy but could not be initialized")
 
         source = self._flatten_summaries(source)
         summaries = self._flatten_references_list(summaries)
