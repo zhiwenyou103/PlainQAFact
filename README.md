@@ -17,10 +17,12 @@
   <img src="https://github.com/zhiwenyou103/PlainQAFact/blob/main/pics/system.jpg" height="500" width="750">
 </div>
 
+## Model Downloading
+In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
 
-## Installation
+Download the pre-trained QA model and our pre-trained classifier through `bash download_question_answering.sh`.
 
-### Quickstart
+## Quickstart
 ```bash
 conda create -n plainqafact python=3.9
 pip install plainqafact
@@ -88,7 +90,8 @@ print(f"Simplification score (mean: {results['internal_mean']:.4f}):", results['
 print(f"PlainQAFact score: {results['overall_mean']:.4f}")
 ```
 
-### Option 2: Install from source
+## Option 2: Install from source
+### Installation
 - First, create a new conda env: `conda create -n plainqafact python=3.9` and clone our repo.
 - `cd PlainQAFact`
 - Follow the instructions in [MedRAG](https://github.com/Teddy-XiongGZ/MedRAG?tab=readme-ov-file#requirements) to install PyTorch and other required packages.
@@ -101,14 +104,7 @@ print(f"PlainQAFact score: {results['overall_mean']:.4f}")
     ```bash
     pip install transformers_old_tokenizer-3.1.0-py3-none-any.whl
     ```
-
-## Model Downloading
-In PlainQAFact, we use [`Llama 3.1 8B Instruct`](https://huggingface.co/meta-llama/Llama-3.1-8B-Instruct) for answer extraction, fine-tuned [`QG model`](https://huggingface.co/uzw/bart-large-question-generation), and the original question answering model from [QAFactEval](https://github.com/salesforce/QAFactEval).
-
-Download the pre-trained QA model and our pre-trained classifier through `bash download_question_answering.sh`.
-
-
-## Usage of PlainQAFact
+    
 ### Running through our PlainFact dataset
 Before running the following command, please download the question answering and learned classifier models through above instructions. 
 ```bash
