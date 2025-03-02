@@ -224,7 +224,16 @@ class PlainQAFact(QAEval):
         external_summaries = [[s] for s in external]
         internal_summaries = [[s] for s in internal]
 
-        generator = self._initialize_answer_extractor()
+        generator = None
+        try:
+            generator = self._initialize_answer_extractor()
+            if generator is None and self.answer_selection_strategy == 'llm-keywords':
+                print("Warning: Failed to initialize generator for llm-keywords strategy. Falling back to default strategy.")
+                self.answer_selection_strategy = 'none'
+        except Exception as e:
+            print(f"Error initializing generator: {str(e)}")
+            print("Falling back to default strategy.")
+            self.answer_selection_strategy = 'none'
 
         if external:
             combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
