@@ -1,6 +1,7 @@
 # PlainQAFact
 
 ## News
+- (2025.03.02) Pre-embedded vector bases of [Textbooks](https://github.com/jind11/MedQA) and [StatPearls](https://www.statpearls.com/) can be downloaded [here](https://drive.google.com/file/d/1DVJoKwuFLCIs0iEvrkP05KS9y6Z6kjXT/view?usp=sharing).
 - (2025.03.01) 🚨🚨🚨 PlainQAFact is now on [PyPI](https://pypi.org/project/plainqafact/)! Simply use `pip install plainqafact` to load our pipeline!
 - (2025.02.24) Our PlainFact dataset can be downloaded here: [`PlainFact`](https://drive.google.com/drive/folders/1mbb06BbZWogweoxc1I5AE7I7m13qhiRL?usp=sharing), including sentence-level and summary-level granularities.
     - Target_Sentence: The plain language sentence/summary.
