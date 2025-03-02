@@ -159,7 +159,6 @@ def main():
         answer_selection_strategy=config.answer_selection_strategy
     )
 
-
     try:
         generator = initialize_answer_extractor(config)
     except Exception as e:
