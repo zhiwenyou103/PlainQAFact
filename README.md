@@ -1,5 +1,5 @@
 [![PyPI](https://img.shields.io/badge/PyPI-library-blue)](https://pypi.org/project/plainqafact/)
-[![Paper](https://img.shields.io/badge/arXiv-paper-B31B1B.svg)](XXX)
+[![Paper](https://img.shields.io/badge/arXiv-paper-B31B1B.svg)](https://arxiv.org/abs/2503.08890)
 [![Dataset](http://img.shields.io/badge/PlainFact-dataset-008080)](https://huggingface.co/datasets/uzw/PlainFact)
 
 # PlainQAFact
@@ -167,6 +167,16 @@ Currently, we only experiment with two KBs: Textbooks and StatPearls. You may wa
 
 ## Citation Information
 For the use of PlainQAFact and PlainFact benchmark, please cite:
-
+```
+@misc{you2025plainqafactautomaticfactualityevaluation,
+      title={PlainQAFact: Automatic Factuality Evaluation Metric for Biomedical Plain Language Summaries Generation}, 
+      author={Zhiwen You and Yue Guo},
+      year={2025},
+      eprint={2503.08890},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2503.08890}, 
+}
+```
 ## Contact Information
 If you have any questions, please email `zhiweny2@illinois.edu`.
