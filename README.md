@@ -1,11 +1,7 @@
 <div align="left">
-  <a href="https://pypi.org/project/plainqafact/">
-    <img src="https://img.shields.io/badge/PyPI-library-blue" alt="PyPI">
-  </a>
-  <a href="https://arxiv.org/abs/2503.08890" target="_blank"><img src=https://img.shields.io/badge/arXiv-b5212f.svg?logo=arxiv></a>
-  <a href="https://huggingface.co/datasets/uzw/PlainFact">
-    <img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-blue?color=8A2BE2" alt="Dataset">
-  </a>
+  <a href="https://pypi.org/project/plainqafact/"><img src="https://img.shields.io/badge/PyPI-library-blue" alt="PyPI"></a>
+  <a href="https://arxiv.org/abs/2503.08890"><img src=https://img.shields.io/badge/arXiv-b5212f.svg?logo=arxiv alt="arXiv"></a>
+  <a href="https://huggingface.co/datasets/uzw/PlainFact"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-blue?color=8A2BE2" alt="Dataset"></a>
 </div>
 
 
