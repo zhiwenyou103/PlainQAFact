@@ -46,7 +46,7 @@ metric = PlainQAFact(
     llm_model_path='meta-llama/Llama-3.1-8B-Instruct',
     question_generation_model_path='uzw/bart-large-question-generation',
     qa_answering_model_dir='models/answering',
-    knowledge_base='combined',
+    knowledge_base='combined', # retrieve from both Textbooks and StatPearls KBs
     scoring_batch_size=1,
     answer_selection_strategy='llm-keywords'
 )
@@ -123,7 +123,7 @@ python3 run.py \
     --llm_model_path meta-llama/Llama-3.1-8B-Instruct \ # path of the answer extractor
     --question_generation_model_path uzw/bart-large-question-generation \ # path of the question generation model
     --qa_answering_model_dir models/answering \ # path of the question answering model
-    --knowledge_base combined \ # knowledge bases for retrieval
+    --knowledge_base combined \ # knowledge bases for retrieval, options: textbooks, statpearls, pubmed, wikipedia, combined
     --answer_selection_strategy llm-keywords  # Options: 'llm-keywords', 'gpt-keywords', 'none'
 ```
 
