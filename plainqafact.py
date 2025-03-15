@@ -196,6 +196,14 @@ class PlainQAFact(QAEval):
             knowledge = self._retrieve_knowledge(summaries, "StatPearls")
             return [f"{abs_text}{sp_know}"
                     for abs_text, sp_know in zip(abstracts, knowledge)]
+        elif self.knowledge_base == 'pubmed':
+            knowledge = self._retrieve_knowledge(summaries, "PubMed")
+            return [f"{abs_text}{sp_know}"
+                    for abs_text, sp_know in zip(abstracts, knowledge)]
+        elif self.knowledge_base == 'wikipedia':
+            knowledge = self._retrieve_knowledge(summaries, "Wikipedia")
+            return [f"{abs_text}{sp_know}"
+                    for abs_text, sp_know in zip(abstracts, knowledge)]
         else:  # combined
             textbook_knowledge = self._retrieve_knowledge(summaries, "Textbooks")
             statpearl_knowledge = self._retrieve_knowledge(summaries, "StatPearls")
