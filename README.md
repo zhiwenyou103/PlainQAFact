@@ -1,6 +1,13 @@
-[![PyPI](https://img.shields.io/badge/PyPI-library-blue)](https://pypi.org/project/plainqafact/)
-[![Paper](https://img.shields.io/badge/arXiv-paper-B31B1B.svg)](https://arxiv.org/abs/2503.08890)
-[![Dataset](http://img.shields.io/badge/PlainFact-dataset-008080)](https://huggingface.co/datasets/uzw/PlainFact)
+<div align="left">
+  <a href="https://pypi.org/project/plainqafact/">
+    <img src="https://img.shields.io/badge/PyPI-library-blue" alt="PyPI">
+  </a>
+  <a href="https://arxiv.org/abs/2503.08890" target="_blank"><img src=https://img.shields.io/badge/arXiv-b5212f.svg?logo=arxiv></a>
+  <a href="https://huggingface.co/datasets/uzw/PlainFact">
+    <img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-blue?color=8A2BE2" alt="Dataset">
+  </a>
+</div>
+
 
 # PlainQAFact
 `PlainQAFact` is a retrieval-augmented and question-answering (QA)-based factuality evaluation framework for assessing the factuality of biomedical plain language summarization tasks. `PlainFact` is a high-quality human-annotated dataset with fine-grained explanation (i.e., added information) annotations.
