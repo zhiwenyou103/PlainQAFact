@@ -171,14 +171,11 @@ Currently, we only experiment with two KBs: Textbooks and StatPearls. You may wa
 ## Citation Information
 For the use of PlainQAFact and PlainFact benchmark, please cite:
 ```
-@misc{you2025plainqafactautomaticfactualityevaluation,
-      title={PlainQAFact: Automatic Factuality Evaluation Metric for Biomedical Plain Language Summaries Generation}, 
-      author={Zhiwen You and Yue Guo},
-      year={2025},
-      eprint={2503.08890},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2503.08890}, 
+@article{youa2025plainqafact,
+  title={PlainQAFact: Retrieval-augmented Factual Consistency Evaluation Metric for Biomedical Plain Language Summarization},
+  author={Youa, Zhiwen and Guoa, Yue},
+  journal={arXiv preprint arXiv:2503.08890},
+  year={2025}
 }
 ```
 ## Contact Information
