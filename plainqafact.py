@@ -13,6 +13,8 @@ from openai import OpenAI
 from src.medrag import MedRAG
 import torch
 import gc
+import nltk
+nltk.download('punkt')
 
 MetricsDict = Dict[str, float]
 SummaryType = Union[str, List[str]]
@@ -210,27 +212,41 @@ class PlainQAFact(QAEval):
             return [f"{abs_text} {tb_know} {sp_know}"
                     for abs_text, tb_know, sp_know in zip(abstracts, textbook_knowledge, statpearl_knowledge)]
 
-    def evaluate(self, target_sentences: List[str], abstracts: List[str]) -> Dict:
-        if len(target_sentences) != len(abstracts):
-            raise ValueError("The number of target sentences must match the number of abstracts")
+    def evaluate(self, summaries: List[str], abstracts: List[str]) -> Dict:
+        if len(summaries) != len(abstracts):
+            raise ValueError("The number of summaries must match the number of abstracts")
 
         classifier = self._initialize_classifier()
         self._initialize_bertscore_scorer()
-        
+
+        all_sentences = []
+        all_abs = []
+        for summary, abstract in zip(summaries, abstracts):
+            sentences = nltk.sent_tokenize(summary)
+            all_sentences.append(sentences)
+            all_abs.append([abstract] * len(sentences))
+
         external, external_abs = [], []
         internal, internal_abs = [], []
-        
-        for abstract, sentence in zip(abstracts, target_sentences):
-            label, _ = classifier.predict(abstract, sentence)
-            if label == 'yes':
-                external.append(sentence)
-                external_abs.append(abstract)
-            else:
-                internal.append(sentence)
-                internal_abs.append(abstract)
 
-        external_summaries = [[s] for s in external]
-        internal_summaries = [[s] for s in internal]
+        for sent_list, abs_list in zip(all_sentences, all_abs):
+            temp_external, temp_external_abs = [], []
+            temp_internal, temp_internal_abs = [], []
+            for sentence, abstract in zip(sent_list, abs_list):
+                label, _ = classifier.predict(abstract, sentence)
+                if label == 'yes':
+                    temp_external.append([sentence])
+                    temp_external_abs.append(abstract)
+                else:
+                    temp_internal.append([sentence])
+                    temp_internal_abs.append(abstract)
+            external.append(temp_external)
+            external_abs.append(temp_external_abs)
+            internal.append(temp_internal)
+            internal_abs.append(temp_internal_abs)
+
+        external_summaries = external
+        internal_summaries = internal
 
         generator = None
         try:
@@ -243,33 +259,40 @@ class PlainQAFact(QAEval):
             print("Falling back to default strategy.")
             self.answer_selection_strategy = 'none'
 
-        if external:
-            combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
-            external_results = self.score_batch_qafacteval(
-                combined_contexts,
-                external_summaries,
-                return_qa_pairs=True,
-                generator=generator
-            )
-        else:
-            external_results = []
+        all_external_results = []
+        for abs_list, pls_list in zip(external_abs, external_summaries):
+            if pls_list:
+                combined_contexts = self._get_combined_knowledge(abs_list, pls_list)
+                results = self.score_batch_qafacteval(
+                    combined_contexts, pls_list, return_qa_pairs=True, generator=generator
+                )
+                all_external_results.append(results)
+            else:
+                all_external_results.append([])
 
-        if internal:
-            internal_results = self.score_batch_qafacteval(
-                internal_abs,
-                internal_summaries,
-                return_qa_pairs=True,
-                generator=generator
-            )
-        else:
-            internal_results = []
+        all_internal_results = []
+        for abs_list, pls_list in zip(internal_abs, internal_summaries):
+            if pls_list:
+                results = self.score_batch_qafacteval(
+                    abs_list, pls_list, return_qa_pairs=True, generator=generator
+                )
+                all_internal_results.append(results)
+            else:
+                all_internal_results.append([])
 
-        external_scores = [metrics['qa-eval']['bertscore'] for metrics, *_ in external_results] if external_results else []
-        internal_scores = [metrics['qa-eval']['bertscore'] for metrics, *_ in internal_results] if internal_results else []
+        external_scores = []
+        for results in all_external_results:
+            for metrics, *_ in results:
+                external_scores.append(metrics['qa-eval']['bertscore'])
+
+        internal_scores = []
+        for results in all_internal_results:
+            for metrics, *_ in results:
+                internal_scores.append(metrics['qa-eval']['bertscore'])
 
         return {
-            'external_results': external_results,
-            'internal_results': internal_results,
+            'external_results': all_external_results,
+            'internal_results': all_internal_results,
             'external_scores': external_scores,
             'internal_scores': internal_scores,
             'external_mean': np.mean(external_scores) if external_scores else 0,
@@ -289,23 +312,46 @@ class PlainQAFact(QAEval):
         else:
             raise ValueError(f"Unsupported file format: {self.input_file_format}")
 
+        pls_summaries = df[self.target_sentence_col].tolist()
+        original_abstracts = df[self.abstract_col].tolist()
+        
+        pls_sentences = []
+        abstracts = []
+        for pls, abs in zip(pls_summaries, original_abstracts):
+            document = pls
+            split_sentences = nltk.sent_tokenize(document)
+            pls_sentences.append(split_sentences)
+            temp_abs = []
+            for sentence in split_sentences:
+                if sentence:
+                    temp_abs.append(abs)
+            abstracts.append(temp_abs)
+        
         classifier = self._initialize_classifier()
         self._initialize_bertscore_scorer()
         
         external, external_abs = [], []
         internal, internal_abs = [], []
         
-        for abstract, sentence in zip(df[self.abstract_col], df[self.target_sentence_col]):
-            label, _ = classifier.predict(abstract, sentence)
-            if label == 'yes':
-                external.append(sentence)
-                external_abs.append(abstract)
-            else:
-                internal.append(sentence)
-                internal_abs.append(abstract)
+        # for abstract, sentence in zip(df[self.abstract_col], df[self.target_sentence_col]):
+        for parent_abstract, parent_sentence in zip(abstracts, pls_sentences):
+            temp_external, temp_external_abs = [], []
+            temp_internal, temp_internal_abs = [], []
+            for sentence, abstract in zip(parent_sentence, parent_abstract):
+                label, _ = classifier.predict(abstract, sentence)
+                if label == 'yes':
+                    temp_external.append([sentence])
+                    temp_external_abs.append(abstract)
+                else:
+                    temp_internal.append([sentence])
+                    temp_internal_abs.append(abstract)
+            external.append(temp_external)
+            external_abs.append(temp_external_abs)
+            internal.append(temp_internal)
+            internal_abs.append(temp_internal_abs)
 
-        external_summaries = [[s] for s in external]
-        internal_summaries = [[s] for s in internal]
+        external_summaries = external
+        internal_summaries = internal
 
         generator = None
         try:
@@ -318,33 +364,40 @@ class PlainQAFact(QAEval):
             print("Falling back to default strategy.")
             self.answer_selection_strategy = 'none'
 
-        if external:
-            combined_contexts = self._get_combined_knowledge(external_abs, external_summaries)
-            external_results = self.score_batch_qafacteval(
-                combined_contexts,
-                external_summaries,
-                return_qa_pairs=True,
-                generator=generator
-            )
-        else:
-            external_results = []
+        all_external_results = []
+        for abs_list, pls_list in zip(external_abs, external_summaries):
+            if pls_list:
+                combined_contexts = self._get_combined_knowledge(abs_list, pls_list)
+                results = self.score_batch_qafacteval(
+                    combined_contexts, pls_list, return_qa_pairs=True, generator=generator
+                )
+                all_external_results.append(results)
+            else:
+                all_external_results.append([])
 
-        if internal:
-            internal_results = self.score_batch_qafacteval(
-                internal_abs,
-                internal_summaries,
-                return_qa_pairs=True,
-                generator=generator
-            )
-        else:
-            internal_results = []
+        all_internal_results = []
+        for abs_list, pls_list in zip(internal_abs, internal_summaries):
+            if pls_list:
+                results = self.score_batch_qafacteval(
+                    abs_list, pls_list, return_qa_pairs=True, generator=generator
+                )
+                all_internal_results.append(results)
+            else:
+                all_internal_results.append([])
 
-        external_scores = [metrics['qa-eval']['bertscore'] for metrics, *_ in external_results] if external_results else []
-        internal_scores = [metrics['qa-eval']['bertscore'] for metrics, *_ in internal_results] if internal_results else []
+        external_scores = []
+        for results in all_external_results:
+            for metrics, *_ in results:
+                external_scores.append(metrics['qa-eval']['bertscore'])
+
+        internal_scores = []
+        for results in all_internal_results:
+            for metrics, *_ in results:
+                internal_scores.append(metrics['qa-eval']['bertscore'])
 
         return {
-            'external_results': external_results,
-            'internal_results': internal_results,
+            'external_results': all_external_results,
+            'internal_results': all_internal_results,
             'external_scores': external_scores,
             'internal_scores': internal_scores,
             'external_mean': np.mean(external_scores) if external_scores else 0,
