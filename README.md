@@ -55,18 +55,18 @@ metric = PlainQAFact(
 )
 
 # choice 1: interactively evaluate summaries
-# summaries:
-target_sentences = [
-    "The study shows aspirin reduces heart attack risk.",
-    "Patients with high blood pressure should exercise regularly."
+# each element is a full summary (multi-sentence); the metric splits into sentences automatically
+summaries = [
+    "The study shows aspirin reduces heart attack risk. Patients should consider daily low-dose aspirin therapy.",
+    "Patients with high blood pressure should exercise regularly. A healthy diet also helps manage hypertension."
 ]
-# scientific abstracts:
+# corresponding scientific abstracts:
 abstracts = [
     "A comprehensive clinical trial demonstrated that daily aspirin administration significantly decreased the incidence of myocardial infarction in high-risk patients.",
     "Research indicates that regular physical activity is an effective intervention for managing hypertension in adult patients."
 ]
 
-results = metric.evaluate(target_sentences, abstracts)
+results = metric.evaluate(summaries, abstracts)
 
 print(f"Explanation score (mean: {results['external_mean']:.4f}):", results['external_scores'])
 print(f"Simplification score (mean: {results['internal_mean']:.4f}):", results['internal_scores'])
