@@ -9,6 +9,7 @@
 `PlainQAFact` is a retrieval-augmented and question-answering (QA)-based factuality evaluation framework for assessing the factuality of biomedical plain language summarization tasks. `PlainFact` is a high-quality human-annotated dataset with fine-grained explanation (i.e., added information) annotations.
 
 ## News
+- (2026.03.19) `PlainQAFact` is accepted by Journal of Biomedical Informatics: [final version](https://authors.elsevier.com/a/1mpuK5SMDR04mm)
 - (2025.03.11) `PlainFact` is now available on 🤗 Hugging Face: [PlainFact](https://huggingface.co/datasets/uzw/PlainFact) for sentence-level data and [PlainFact-summary](https://huggingface.co/datasets/uzw/PlainFact-summary) for summary-level data.
 - (2025.03.02) Pre-embedded vector bases of [Textbooks](https://github.com/jind11/MedQA) and [StatPearls](https://www.statpearls.com/) can be downloaded [here](https://drive.google.com/file/d/1DVJoKwuFLCIs0iEvrkP05KS9y6Z6kjXT/view?usp=sharing).
 - (2025.03.01) 🚨🚨🚨 `PlainQAFact` is now on [PyPI](https://pypi.org/project/plainqafact/)! Simply use `pip install plainqafact` to load our pipeline!
@@ -171,14 +172,17 @@ Currently, we only experiment with two KBs: Textbooks and StatPearls. You may wa
 ## Citation Information
 For the use of PlainQAFact and PlainFact benchmark, please cite:
 ```
-@misc{you2025plainqafactretrievalaugmentedfactualconsistency,
-      title={PlainQAFact: Retrieval-augmented Factual Consistency Evaluation Metric for Biomedical Plain Language Summarization}, 
-      author={Zhiwen You and Yue Guo},
-      year={2025},
-      eprint={2503.08890},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2503.08890}, 
+@article{YOU2026105019,
+title = {PlainQAFact: Retrieval-augmented factual consistency evaluation metric for biomedical plain language summarization},
+journal = {Journal of Biomedical Informatics},
+volume = {178},
+pages = {105019},
+year = {2026},
+issn = {1532-0464},
+doi = {https://doi.org/10.1016/j.jbi.2026.105019},
+url = {https://www.sciencedirect.com/science/article/pii/S1532046426000432},
+author = {Zhiwen You and Yue Guo},
+keywords = {Plain language summarization, Factual consistency evaluation, Retrieval-augmented generation, Hallucination, Large language models}
 }
 ```
 ## Contact Information
